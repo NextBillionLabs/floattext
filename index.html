@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloatText - Floating Clipboard for Windows & Android</title>
+    <meta name="description" content="FloatText puts your clipboard text in a floating overlay that stays on top. Copy anything with one click. Available on Windows and Android.">
+    <meta name="theme-color" content="#1a9c8a">
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="FloatText - Floating Clipboard">
+    <meta property="og:description" content="Your text, always floating. Copy anything with one click.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="icon.png">
+
+    <style>
+        :root {
+            --primary: #1a9c8a;
+            --primary-dark: #148577;
+            --bg: #ffffff;
+            --bg-alt: #f6f8fa;
+            --text: #1a1a2e;
+            --text-muted: #5a6270;
+            --border: #e1e4e8;
+            --card-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Nav ─────────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 0 24px;
+        }
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .nav-brand img { width: 32px; height: 32px; }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        /* ─── Hero ────────────────────────────────────── */
+        .hero {
+            padding: 140px 24px 80px;
+            text-align: center;
+            background: linear-gradient(180deg, #f0faf8 0%, #ffffff 100%);
+        }
+        .hero-icon {
+            width: 96px;
+            height: 96px;
+            margin-bottom: 24px;
+            filter: drop-shadow(0 4px 12px rgba(26, 156, 138, 0.25));
+        }
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero p {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 0 auto 40px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(26, 156, 138, 0.35);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 156, 138, 0.4);
+        }
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .hero-note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ─── Preview ─────────────────────────────────── */
+        .preview {
+            padding: 0 24px 80px;
+            text-align: center;
+        }
+        .preview-window {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-alt);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .preview-titlebar {
+            background: #e8eaed;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .preview-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        .preview-dot.r { background: #ff5f57; }
+        .preview-dot.y { background: #ffbd2e; }
+        .preview-dot.g { background: #28c840; }
+        .preview-content {
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .preview-float {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 28px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: 2px solid var(--primary);
+            text-align: left;
+            min-width: 200px;
+        }
+        .preview-float-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .preview-float-text {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.8;
+            color: var(--text);
+        }
+        .preview-float-btn {
+            margin-top: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 100%;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .preview-desc {
+            text-align: left;
+            max-width: 280px;
+        }
+        .preview-desc h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        .preview-desc p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* ─── Features ────────────────────────────────── */
+        .features {
+            padding: 80px 24px;
+            background: var(--bg-alt);
+        }
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        .section-sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 17px;
+            margin-bottom: 56px;
+        }
+        .features-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--bg);
+            border-radius: 14px;
+            padding: 32px 28px;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .feature-card:hover {
+            box-shadow: var(--card-shadow);
+            transform: translateY(-2px);
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e8f7f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ─── How it works ────────────────────────────── */
+        .how {
+            padding: 80px 24px;
+        }
+        .steps {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 240px;
+            text-align: center;
+        }
+        .step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+        .step h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .step p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* ─── Platforms ───────────────────────────────── */
+        .platforms {
+            padding: 80px 24px;
+            background: var(--bg-alt);
+            text-align: center;
+        }
+        .platform-cards {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .platform-card {
+            background: var(--bg);
+            border-radius: 14px;
+            padding: 36px 40px;
+            border: 1px solid var(--border);
+            flex: 1;
+            min-width: 260px;
+            max-width: 320px;
+        }
+        .platform-card h3 {
+            font-size: 20px;
+            margin: 12px 0 8px;
+            font-weight: 700;
+        }
+        .platform-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .platform-card .btn { width: 100%; justify-content: center; }
+
+        /* ─── Footer ──────────────────────────────────── */
+        footer {
+            padding: 48px 24px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        /* ─── Responsive ──────────────────────────────── */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 17px; }
+            .preview-content { flex-direction: column; gap: 24px; }
+            .preview-desc { text-align: center; }
+            .section-title { font-size: 28px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="nav-brand">
+            <img src="icon.png" alt="FloatText">
+            FloatText
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how">How it works</a>
+            <a href="#download">Download</a>
+            <a href="https://github.com/NextBillionLabs/FloatText-Windows" target="_blank">GitHub</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <img src="icon.png" alt="FloatText" class="hero-icon">
+    <h1>Your text,<br>always <span>floating</span></h1>
+    <p>A floating clipboard overlay that stays on top of every window. Copy anything with one click.</p>
+    <div class="hero-buttons">
+        <a href="https://github.com/NextBillionLabs/FloatText-Windows/releases/latest/download/FloatText.exe" class="btn btn-primary" id="download">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for Windows
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.floattext.app" class="btn btn-secondary" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33-2.877 1.665-2.06-2.06 2.635-2.935zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+            Get on Android
+        </a>
+    </div>
+    <p class="hero-note">Windows 10+ &middot; No install needed &middot; Free with Pro sync</p>
+</section>
+
+<!-- Preview -->
+<section class="preview">
+    <div class="preview-window">
+        <div class="preview-titlebar">
+            <div class="preview-dot r"></div>
+            <div class="preview-dot y"></div>
+            <div class="preview-dot g"></div>
+        </div>
+        <div class="preview-content">
+            <div class="preview-float">
+                <div class="preview-float-title">Text 1 of 4:</div>
+                <div class="preview-float-text">
+                    Meeting at 3pm<br>
+                    Buy groceries<br>
+                    Call dentist<br>
+                    Project deadline Friday
+                </div>
+                <button class="preview-float-btn">Copy</button>
+            </div>
+            <div class="preview-desc">
+                <h3>Always visible</h3>
+                <p>The floating window stays on top of everything. Your text is always one click away, no matter what app you're using.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+    <h2 class="section-title">Built for speed</h2>
+    <p class="section-sub">No bloat. No fluff. Just your text, ready to copy.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            </div>
+            <h3>Floating overlay</h3>
+            <p>A compact window that stays on top of every app. Drag it anywhere on your screen.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </div>
+            <h3>One-click copy</h3>
+            <p>Hit Copy and it's on your clipboard. No selecting, no Ctrl+C. Instant.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </div>
+            <h3>Cross-device sync</h3>
+            <p>Sign in with Google and your text syncs between your Android phone and Windows PC.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <h3>Navigate lines</h3>
+            <p>Previous and Next buttons let you cycle through each line of text one at a time.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Secure sign-in</h3>
+            <p>OAuth 2.0 with PKCE. Your credentials never touch our servers. Open source on GitHub.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <h3>Portable</h3>
+            <p>Single .exe file. No installation required. Run it from anywhere — USB, desktop, cloud drive.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="how" id="how">
+    <h2 class="section-title">Three steps</h2>
+    <p class="section-sub">Up and running in under a minute.</p>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Download</h3>
+            <p>Grab FloatText.exe. Single file, no installer.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Type your text</h3>
+            <p>Enter your lines — notes, links, snippets, anything.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Launch & copy</h3>
+            <p>Hit Launch. The floating window appears. Click Copy whenever you need it.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Download -->
+<section class="platforms" id="download">
+    <h2 class="section-title">Get FloatText</h2>
+    <p class="section-sub">Available on Windows and Android.</p>
+    <div class="platform-cards">
+        <div class="platform-card">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#0078D4"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+            <h3>Windows</h3>
+            <p>Windows 10 or later. Single .exe, no install needed.</p>
+            <a href="https://github.com/NextBillionLabs/FloatText-Windows/releases/latest/download/FloatText.exe" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download .exe
+            </a>
+        </div>
+        <div class="platform-card">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#3DDC84"><path d="M17.523 2.228l1.406-2.705a.34.34 0 0 0-.14-.46.332.332 0 0 0-.455.144L16.9 1.924a8.67 8.67 0 0 0-4.9-1.459 8.67 8.67 0 0 0-4.9 1.459L5.666-.793a.332.332 0 0 0-.455-.144.34.34 0 0 0-.14.46l1.406 2.705A8.31 8.31 0 0 0 3 8.462h18a8.31 8.31 0 0 0-3.477-6.234zM7.5 6.228a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zm9 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zM3 9.462v9a1.5 1.5 0 0 0 1.5 1.5h1v3a1.5 1.5 0 1 0 3 0v-3h3v3a1.5 1.5 0 1 0 3 0v-3h1a1.5 1.5 0 0 0 1.5-1.5v-9H3zm-2.25.75a1.5 1.5 0 1 0-3 0v6a1.5 1.5 0 1 0 3 0v-6zm19.5 0a1.5 1.5 0 1 0 3 0v6a1.5 1.5 0 1 0 3 0v-6z" transform="translate(0,2)"/></svg>
+            <h3>Android</h3>
+            <p>5,000+ downloads on the Play Store.</p>
+            <a href="https://play.google.com/store/apps/details?id=com.floattext.app" class="btn btn-secondary" target="_blank">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33-2.877 1.665-2.06-2.06 2.635-2.935zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+                Google Play
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-links">
+        <a href="https://github.com/NextBillionLabs/FloatText-Windows" target="_blank">GitHub</a>
+        <a href="mailto:floattexthelp@gmail.com">Contact</a>
+        <a href="https://www.youtube.com/@nextbillionlabs" target="_blank">YouTube</a>
+    </div>
+    <p>Built by <a href="https://github.com/NextBillionLabs" target="_blank">NextBillionLabs</a></p>
+</footer>
+
+</body>
+</html>
