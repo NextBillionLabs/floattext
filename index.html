@@ -190,7 +190,9 @@
         }
         .device-windows .device-frame {
             max-width: 280px;
-            border: 3px solid #e1e4e8;
+            border: none;
+            background: transparent;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
         }
         .device-android .device-frame {
             max-width: 220px;
@@ -205,37 +207,6 @@
         }
         .device-label span {
             color: var(--primary);
-        }
-        .showcase-divider {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 1s ease 0.6s;
-        }
-        .showcase-divider.visible { opacity: 1; }
-        .sync-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse-sync 2s ease-in-out infinite;
-        }
-        .sync-icon svg { width: 24px; height: 24px; }
-        .sync-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        @keyframes pulse-sync {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(26,156,138,0.4); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(26,156,138,0); }
         }
         /* Float animation for the windows device */
         .device-windows .device-frame {
@@ -476,12 +447,6 @@
             </div>
             <div class="device-label"><span>Windows</span></div>
         </div>
-        <div class="showcase-divider">
-            <div class="sync-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            </div>
-            <span class="sync-label">Synced</span>
-        </div>
         <div class="showcase-device device-android delay">
             <div class="device-frame">
                 <img src="android-float.webp" alt="FloatText on Android" loading="lazy">
@@ -496,7 +461,7 @@
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.2 });
-document.querySelectorAll('.showcase-device, .showcase-divider').forEach(el => observer.observe(el));
+document.querySelectorAll('.showcase-device').forEach(el => observer.observe(el));
 </script>
 
 <!-- Features -->
@@ -522,8 +487,8 @@ document.querySelectorAll('.showcase-device, .showcase-divider').forEach(el => o
             <div class="feature-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a9c8a" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
             </div>
-            <h3>Cross-device sync</h3>
-            <p>Sign in with Google and your text syncs between your Android phone and Windows PC.</p>
+            <h3>Works everywhere</h3>
+            <p>Available on both Android and Windows. Same experience, same features, on your phone and PC.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">
