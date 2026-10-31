@@ -1,6 +1,14 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK4EXWKD49"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GK4EXWKD49');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FloatText - Floating Clipboard for Windows & Android</title>
@@ -428,7 +436,7 @@
     <h1>Stop switching apps<br>to <span>copy-paste</span></h1>
     <p>FloatText keeps your text floating on screen while you work. One tap to copy, paste it anywhere. No more switching back and forth between apps.</p>
     <div class="hero-buttons">
-        <a href="https://drive.usercontent.google.com/download?id=1FXNnuux2j6rwsh9CxCI8O69jIPCQwTcP&export=download" class="btn btn-primary" id="download">
+        <a href="https://drive.usercontent.google.com/download?id=1FXNnuux2j6rwsh9CxCI8O69jIPCQwTcP&export=download" onclick="gtag('event','download',{'event_category':'Windows','event_label':'FloatText-Setup.exe'})" class="btn btn-primary" id="download">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download for Windows
         </a>
@@ -548,7 +556,7 @@ document.querySelectorAll('.showcase-device').forEach(el => observer.observe(el)
             <svg width="40" height="40" viewBox="0 0 24 24" fill="#0078D4"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
             <h3>Windows</h3>
             <p>Windows 10 or later. Quick setup with installer.</p>
-            <a href="https://drive.usercontent.google.com/download?id=1FXNnuux2j6rwsh9CxCI8O69jIPCQwTcP&export=download" class="btn btn-primary">
+            <a href="https://drive.usercontent.google.com/download?id=1FXNnuux2j6rwsh9CxCI8O69jIPCQwTcP&export=download" onclick="gtag('event','download',{'event_category':'Windows','event_label':'FloatText-Setup.exe'})" class="btn btn-primary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download Setup
             </a>
@@ -577,6 +585,7 @@ document.querySelectorAll('.showcase-device').forEach(el => observer.observe(el)
 
 </body>
 </html>
+
 
 
 
